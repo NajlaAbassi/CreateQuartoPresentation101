@@ -1,0 +1,371 @@
+---
+title: "Creating Presentations in Quarto 101"
+author:
+- name: Najla Abassi
+  affiliation:
+  - Bio* Meeting - Methods Presentation 
+  - Institute of Medical Biostatistics, Epidemiology and Informatics (IMBEI)
+date: "10.14.2025"
+date-format: DD.MM.YYYY
+format:
+  revealjs:
+    self-contained: false
+    chalkboard: 
+      buttons: true
+    slide-number: false
+    logo: "img/um_logo.png"
+    output: html_document
+    theme:
+    - default
+    - ummz_reveal_theme.scss
+---
+
+## Why Quarto?
+
+:::: {.columns}
+
+::: {.incremental}
+
+::: {.column width="50%"}
+* An open-source scientific & technical publishing system
+
+* Different programming languages
+* Different outputs
+* Reproducible & Shareable...
+  
+:::
+:::
+
+::: {.column width="50%"}
+![](img/what_to_do_with_quarto.png){width=70% fig-align="center"}
+:::
+
+::::
+
+# [Styling & Layout]{.flow}
+
+## Incremental lists
+
+Lists can optionally be displayed incrementally:
+
+::: {.incremental}
+
+* First item
+* Second item
+* Third item
+
+:::
+
+---
+
+## Fragments
+
+Incremental text display and animation with fragments:
+
+::: {.fragment}
+
+Fade in
+
+:::
+
+::: {.fragment .fade-in-then-out}
+
+Fade in, then out
+
+:::
+
+::: {.fragment .fade-up}
+
+Slide up while fading in
+
+:::
+
+:::: {.fragment}
+
+::: {.fragment .highlight-red}
+
+Highlight red
+
+:::
+
+::: {.fragment .fade-out}
+
+Fade out
+
+:::
+
+::::
+
+---
+
+## Column Layout
+
+:::::: {layout="[[1,1], [1]]" layout-heights="[2,1]"}
+
+![](img/tsne_exp.png)
+
+::: {.fragment}
+
+![](img/Woman-Yelling-At-Cat-DeeDee_2.png)
+
+:::
+
+:::: fragment
+
+::: {.callout-tip}
+
+## Tip
+
+Note that there are five types of callouts, including: `note`, `tip`, `warning`, `caution`, and `important.`
+
+:::
+
+::::
+::::::
+
+---
+
+## Slide Transitions {.smaller}
+
+The next few slides will transition using the `slide` transition
+
+| Transition | Description                                                            |
+|------------|------------------------------------------------------------------------|
+| `none`     | No transition (default, switch instantly)                              |
+| `fade`     | Cross fade                                                             |
+| `slide`    | Slide horizontally                                                     |
+| `convex`   | Slide at a convex angle                                                |
+| `concave`  | Slide at a concave angle                                               |
+| `zoom`     | Scale the incoming slide so it grows in from the center of the screen. |
+
+
+# [Code & Output]{.flow}
+
+## Code Blocks {.smaller transition="slide"}
+
+```{r}
+#| echo: true
+#| eval: false
+# create res, a list to hold pseudobulk DE results for all contrasts
+for (i in names(contrast)) {
+  cat("Contrast: ", i,"\n")
+  res <- pbDS(pb,
+              design = mm,
+              contrast = contrast[[i]],
+              verbose = TRUE,
+              BPPARAM = BiocParallel::MulticoreParam(6))
+  
+  results_list[[i]] <- res
+}
+
+# extract contrast
+contrast_vtp_DMSO <- res$table$`VTP-DMSO`
+
+# renaming columns
+for (cell in names(contrast_vtp_DMSO)) {
+  contrast_vtp_DMSO[[cell]] <-
+  contrast_vtp_DMSO[[cell]] |>
+  dplyr::rename(log2FoldChange = logFC,
+                pvalue = p_val,
+                padj = p_adj.loc)
+  
+  rownames(contrast_vtp_DMSO[[cell]]) <- contrast_vtp_DMSO[[cell]]$gene
+}
+
+# optional: update de + enrich list names
+new_names <- c(
+  "NK1 A+B" = "NK1_A_B",
+  "NK1 C" = "NK1_C",
+  "NK2" = "NK2",
+  "NK3" = "NK3" ,
+  "NKint" = "NKint"
+)
+names(contrast_vtp_DMSO) <- new_names[names(contrast_vtp_DMSO)]
+names(func_res) <- new_names[names(func_res)]
+
+# create dde object
+dde <- DeeDeeExperiment(sce_NKcells, # sce object
+                        de_results = contrast_vtp_DMSO, # DEA results
+                        enrich_results = func_res # FEA results
+                        )
+```
+
+---
+
+## Line Highlighting {.smaller transition="slide"}
+
+```{r, eval=FALSE}
+#| echo: true
+#| code-line-numbers: "4-8|14|20|21|22|39-41"
+# create res, a list to hold pseudobulk DE results for all contrasts
+for (i in names(contrast)) {
+  cat("Contrast: ", i,"\n")
+  res <- pbDS(pb,
+              design = mm,
+              contrast = contrast[[i]],
+              verbose = TRUE,
+              BPPARAM = BiocParallel::MulticoreParam(6))
+  
+  results_list[[i]] <- res
+}
+
+# extract contrast
+contrast_vtp_DMSO <- res$table$`VTP-DMSO`
+
+# renaming columns
+for (cell in names(contrast_vtp_DMSO)) {
+  contrast_vtp_DMSO[[cell]] <-
+  contrast_vtp_DMSO[[cell]] |>
+  dplyr::rename(log2FoldChange = logFC,
+                pvalue = p_val,
+                padj = p_adj.loc)
+  
+  rownames(contrast_vtp_DMSO[[cell]]) <- contrast_vtp_DMSO[[cell]]$gene
+}
+
+# optional: update de + enrich list names
+new_names <- c(
+  "NK1 A+B" = "NK1_A_B",
+  "NK1 C" = "NK1_C",
+  "NK2" = "NK2",
+  "NK3" = "NK3" ,
+  "NKint" = "NKint"
+)
+names(contrast_vtp_DMSO) <- new_names[names(contrast_vtp_DMSO)]
+names(func_res) <- new_names[names(func_res)]
+
+# create dde object
+dde <- DeeDeeExperiment(sce_NKcells, # sce object
+                        de_results = contrast_vtp_DMSO, # DEA results
+                        enrich_results = func_res # FEA results
+                        )
+```
+
+---
+
+## Exacutable Code {.smaller transition="slide"}
+
+```{r}
+#| fig-cap: "Temperature and ozone level."
+#| warning: false
+
+library(ggplot2)
+
+ggplot(airquality, aes(Temp, Ozone)) + 
+  geom_point() + 
+  geom_smooth(method = "loess")
+```
+
+---
+
+## Exacutable code {.smaller transition="slide"}
+
+```{r}
+#| fig-cap: "Temperature and ozone level."
+#| warning: false
+#| echo: true
+
+library(ggplot2)
+
+ggplot(airquality, aes(Temp, Ozone)) + 
+  geom_point() + 
+  geom_smooth(method = "loess")
+```
+
+---
+
+## Exacutable code {.smaller}
+
+```{r}
+#| fig-cap: "Temperature and ozone level."
+#| warning: false
+#| echo: true
+#| output-location: fragment
+
+library(ggplot2)
+
+ggplot(airquality, aes(Temp, Ozone)) + 
+  geom_point() + 
+  geom_smooth(method = "loess")
+```
+
+---
+
+## Tabsets {.smaller .scrollable}
+
+::: panel-tabset
+### Data
+
+```{r}
+knitr::kable(mtcars)
+```
+
+### Problem
+
+We want to examine whether cars with higher horsepower (`hp`) tend to have lower fuel efficiency (`mpg`).
+
+### Code
+
+```{r echo=TRUE, eval=FALSE}
+library(ggplot2)
+ggplot(mtcars, aes(hp, mpg, color = am)) +
+  geom_point() +
+  geom_smooth(formula = y ~ x, method = "loess")
+```
+
+### Output
+
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(hp, mpg, color = am)) +
+  geom_point() +
+  geom_smooth(formula = y ~ x, method = "loess")
+```
+
+:::
+
+# [Extra Features ...]{.flow}
+
+## Chalkboard {.smaller chalkboard-buttons="true"}
+
+::: {style="margin-bottom: 0.9em;"}
+Free form drawing and slide annotations
+:::
+
+::: {layout="[1, 20]"}
+![](img/presentation_chalkboard.png){width="41"}
+
+Use the chalkboard button at the bottom left of the slide to toggle the chalkboard.
+:::
+
+::: {layout="[1, 20]"}
+![](img/presentation_notes_canvas.png){width="41"}
+
+Use the notes canvas button at the bottom left of the slide to toggle drawing on top of the current slide.
+:::
+
+You can also press {{< kbd b >}} to toggle the chalkboard or {{< kbd c >}} to toggle the notes canvas.
+
+---
+
+## And More ... {.smaller}
+
+
+* [Custom themes](https://prerelease.quarto.org/docs/presentations/revealjs/themes.html#customizing-themes)
+* Speaker notes (press {{< kbd s >}})
+* [Touch](https://quarto.org/docs/presentations/revealjs/advanced.html#touch-navigation) optimized (presentations look great on mobile, swipe to navigate slides)
+* [Footer & Logo](https://quarto.org/docs/presentations/revealjs/#footer-logo) (optionally specify custom footer per-slide or hide global footer)
+* [Multiplex](https://prerelease.quarto.org/docs/presentations/revealjs/presenting.html#multiplex) (allows your audience to follow the slides of the presentation you are controlling on their own phone, tablet or laptop).
+
+
+
+# [Thank you for your attention ☺]{.flow}
+
+* Getting started with `Quarto`
+    * [https://quarto.org/docs/presentations/](https://quarto.org/docs/presentations/)
+    * [https://quarto.org/docs/gallery/#presentations](https://quarto.org/docs/gallery/#presentations)
+    * [https://www.youtube.com/@PositPBC](https://www.youtube.com/@PositPBC)
+    * ...
+    
+
+
