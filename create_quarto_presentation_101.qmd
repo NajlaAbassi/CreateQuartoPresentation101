@@ -10,6 +10,8 @@ date-format: DD.MM.YYYY
 format:
   revealjs:
     self-contained: false
+    width: 1180
+    margin: 0.08
     chalkboard: 
       buttons: true
     slide-number: false
@@ -326,6 +328,15 @@ ggplot(mtcars, aes(hp, mpg, color = am)) +
 
 # [Extra Features ...]{.flow}
 
+## Interactive Slides {.smaller}
+
+<iframe src="https://crukci.shinyapps.io/isee_tcga/"
+        width="150%" height="600"
+        style="border:none;">
+</iframe>
+
+---
+
 ## Chalkboard {.smaller chalkboard-buttons="true"}
 
 ::: {style="margin-bottom: 0.9em;"}
@@ -350,9 +361,8 @@ You can also press {{< kbd b >}} to toggle the chalkboard or {{< kbd c >}} to to
 
 ## And More ... {.smaller}
 
-
-* [Custom themes](https://prerelease.quarto.org/docs/presentations/revealjs/themes.html#customizing-themes)
 * Speaker notes (press {{< kbd s >}})
+* [Custom themes](https://prerelease.quarto.org/docs/presentations/revealjs/themes.html#customizing-themes)
 * [Touch](https://quarto.org/docs/presentations/revealjs/advanced.html#touch-navigation) optimized (presentations look great on mobile, swipe to navigate slides)
 * [Footer & Logo](https://quarto.org/docs/presentations/revealjs/#footer-logo) (optionally specify custom footer per-slide or hide global footer)
 * [Multiplex](https://prerelease.quarto.org/docs/presentations/revealjs/presenting.html#multiplex) (allows your audience to follow the slides of the presentation you are controlling on their own phone, tablet or laptop).
